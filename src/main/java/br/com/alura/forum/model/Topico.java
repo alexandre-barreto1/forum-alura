@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,6 +13,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotEmpty;
+
+import org.hibernate.validator.constraints.Length;
+
+import com.sun.istack.NotNull; 
 
 @Entity
 public class Topico {
@@ -19,21 +25,39 @@ public class Topico {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@Column(name = "titulo")
 	private String titulo;
+	
+	@Column(name = "mensagem")
 	private String mensagem;
+	
+	@Column(name = "nomeCurso")
+	private String nomeCurso;
+	
+	@Column(name = "dataCriacao")
 	private LocalDateTime dataCriacao = LocalDateTime.now();
+	
 	@Enumerated(EnumType.STRING)
 	private StatusTopico status = StatusTopico.NAO_RESPONDIDO;
+	
 	@ManyToOne
 	private Usuario autor;
+	
 	@ManyToOne
 	private Curso curso;
+	
 	@OneToMany(mappedBy = "topico")
 	private List<Resposta> respostas = new ArrayList<>();
-
-	public Topico(String titulo, String mensagem, Curso curso) {
+	
+	public Topico() {
+		
+	}
+	
+	public Topico(String titulo, String mensagem, String nomeCurso, Curso curso) {
 		this.titulo = titulo;
 		this.mensagem = mensagem;
+		this.nomeCurso = nomeCurso;
 		this.curso = curso;
 	}
 
