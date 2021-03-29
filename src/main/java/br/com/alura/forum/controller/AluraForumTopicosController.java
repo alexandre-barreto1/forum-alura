@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -71,6 +72,20 @@ public class AluraForumTopicosController {
 	
 	@GetMapping("/lista-paginada-simplificada")
 	public Page<TopicoDTO> listaPaginadaSimplificada(@RequestParam(required = false) String nomeCurso,
+			@PageableDefault(sort = "id",direction = Direction.DESC, page = 0, size = 10)Pageable paginacao) {
+		
+		if (nomeCurso == null) {
+			Page<Topico> topicos = topicoRepository.findAll(paginacao);
+			return TopicoDTO.converterListaPaginadaDto(topicos);
+		} else {
+			Page<Topico> topicos = topicoRepository.findByCursoNome(nomeCurso, paginacao);
+			return TopicoDTO.converterListaPaginadaDto(topicos);
+		}
+	}
+	
+	@Cacheable(value = "listaDeTopicos")
+	@GetMapping("/lista-paginada-simplificada-cache")
+	public Page<TopicoDTO> listaPaginadaSimplificadaComCache(@RequestParam(required = false) String nomeCurso,
 			@PageableDefault(sort = "id",direction = Direction.DESC, page = 0, size = 10)Pageable paginacao) {
 		
 		if (nomeCurso == null) {
