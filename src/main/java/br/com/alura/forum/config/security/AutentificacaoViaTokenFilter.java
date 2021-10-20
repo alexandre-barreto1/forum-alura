@@ -10,13 +10,20 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class AutentificacaoViaTokenFilter extends OncePerRequestFilter {
-
+	
+	private TokenService tokenService;
+	
+	public AutentificacaoViaTokenFilter(TokenService tokenService) {
+		this.tokenService = tokenService;
+	}
+	
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 
 		String token = recurperarToken(request);
-
+		boolean valido = tokenService.isTokenValido(token);
+		
 		filterChain.doFilter(request, response);
 	}
 
