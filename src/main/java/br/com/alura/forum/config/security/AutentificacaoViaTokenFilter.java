@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import br.com.alura.forum.model.Usuario;
 import br.com.alura.forum.repository.UsuarioRepository;
 
 public class AutentificacaoViaTokenFilter extends OncePerRequestFilter {
@@ -38,15 +39,16 @@ public class AutentificacaoViaTokenFilter extends OncePerRequestFilter {
 	}
 
 	private void autenticarCliente(String token) {
-		Long idUsuario = tokenService.getIdUsuario(token); 
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getPerfis());
-		SecurityContextHolder.getContext().setAuthentication(null);
+		Long idUsuario = tokenService.getIdUsuario(token);
+		Usuario usuario = repository.findById(idUsuario).get();
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 		
 	}
 
 	private String recurperarToken(HttpServletRequest request) {
 		String token = request.getHeader("Authorization");
-		if (token == null || token.isEmpty() || !token.startsWith("Barer ")) {
+		if (token == null || token.isEmpty() || !token.startsWith("Bearer ")) {
 			return null;
 		}
 		return token.substring(7, token.length());
